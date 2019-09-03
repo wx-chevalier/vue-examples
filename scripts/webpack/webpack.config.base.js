@@ -4,9 +4,9 @@ const path = require('path');
 const process = require('process');
 const ForkTsCheckerWebpackPlugin = require('fork-ts-checker-webpack-plugin');
 const webpack = require('webpack');
-const tsImportPluginFactory = require('ts-import-plugin');
 const TSConfigPathsPlugin = require('tsconfig-paths-webpack-plugin');
 const RewriteImportPlugin = require('less-plugin-rewrite-import');
+const VueLoaderPlugin = require('vue-loader/lib/plugin');
 
 const rootPath = process.cwd();
 const packageName = require(path.resolve(rootPath, 'package.json'));
@@ -67,7 +67,8 @@ module.exports = {
     plugins: [new TSConfigPathsPlugin()],
     alias: {
       '@': path.resolve(rootPath, './src/'),
-      '~antd': path.resolve(rootPath, './node_modules/antd')
+      '~antd': path.resolve(rootPath, './node_modules/antd'),
+      vue$: 'vue/dist/vue.esm.js'
     }
   },
   output: {
@@ -86,13 +87,26 @@ module.exports = {
       },
       {
         test: /\.(ts|tsx)?$/,
-        loader: 'awesome-typescript-loader',
+        loader: 'ts-loader',
         options: {
-          getCustomTransformers: () => ({
-            before: [tsImportPluginFactory(/** options */)]
-          })
+          appendTsSuffixTo: [/\.vue$/]
         },
         exclude: /node_modules/
+      },
+      {
+        test: /\.vue$/,
+        loader: 'vue-loader',
+        options: {
+          loaders: {
+            // Since sass-loader (weirdly) has SCSS as its default parse mode, we map
+            // the "scss" and "sass" values for the lang attribute to the right configs here.
+            // other preprocessors should work out of the box, no loader config like this necessary.
+            scss: 'vue-style-loader!css-loader!sass-loader',
+            sass: 'vue-style-loader!css-loader!sass-loader?indentedSyntax',
+            less: 'vue-style-loader!css-loader!less-loader'
+          }
+          // other vue-loader options go here
+        }
       },
       {
         test: /\.(png|jpg|gif)$/,
@@ -149,7 +163,8 @@ module.exports = {
   plugins: [
     new ForkTsCheckerWebpackPlugin({ checkSyntacticErrors: true, eslint: true }),
     new webpack.WatchIgnorePlugin([/less\.d\.ts$/]),
-    new webpack.IgnorePlugin(/\.js\.map$/)
+    new webpack.IgnorePlugin(/\.js\.map$/),
+    new VueLoaderPlugin()
   ],
 
   // 定义非直接引用依赖，使用方式即为 var $ = require("jquery")
