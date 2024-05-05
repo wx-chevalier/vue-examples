@@ -1,0 +1,32 @@
+# Step 1 - Building the React Application
+FROM node:20-alpine as build
+
+WORKDIR /app
+
+COPY package*.json ./
+
+RUN npm install
+
+COPY . .
+
+# Build the application from package.json
+RUN npm run build:prod 
+
+# Step 2 - Create a new lightweight image to serve the built files
+FROM node:20-alpine
+
+WORKDIR /app
+
+COPY ./webserver ./
+
+COPY --from=build /app/dist ./dist
+
+RUN npm install
+
+# Install PM2 globally
+RUN npm install -g pm2
+
+EXPOSE 3000
+
+# Start the app with PM2
+CMD ["pm2-runtime", "start", "ecosystem.config.js"]

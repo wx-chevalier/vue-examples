@@ -4,7 +4,8 @@ module.exports = {
   extends: [
     'plugin:@typescript-eslint/recommended',
     'plugin:prettier/recommended',
-    'prettier/@typescript-eslint'
+    'prettier/@typescript-eslint',
+    'prettier/react'
   ],
   rules: {
     '@typescript-eslint/no-var-require': 0,
