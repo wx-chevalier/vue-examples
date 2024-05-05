@@ -3,33 +3,19 @@
     <div class="container page">
       <div class="row">
         <div class="col-md-6 offset-md-3 col-xs-12">
-          <h1 class="text-xs-center">
-            Sign in
-          </h1>
+          <h1 class="text-xs-center">Sign in</h1>
           <p class="text-xs-center">
-            <AppLink name="register">
-              Need an account?
-            </AppLink>
+            <AppLink name="register"> Need an account? </AppLink>
           </p>
 
           <ul class="error-messages">
-            <li
-              v-for="(error, field) in errors"
-              :key="field"
-            >
-              {{ field }} {{ error ? error[0] : '' }}
+            <li v-for="(error, field) in errors" :key="field">
+              {{ field }} {{ error ? error[0] : "" }}
             </li>
           </ul>
 
-          <form
-            ref="formRef"
-            aria-label="Login form"
-            @submit.prevent="login"
-          >
-            <fieldset
-              class="form-group"
-              aria-required="true"
-            >
+          <form ref="formRef" aria-label="Login form" @submit.prevent="login">
+            <fieldset class="form-group" aria-required="true">
               <input
                 v-model="form.email"
                 aria-label="Email"
@@ -37,9 +23,9 @@
                 type="email"
                 required
                 placeholder="Email"
-              >
+              />
             </fieldset>
-            <fieldset class=" form-group">
+            <fieldset class="form-group">
               <input
                 v-model="form.password"
                 aria-label="Password"
@@ -47,7 +33,7 @@
                 type="password"
                 required
                 placeholder="Password"
-              >
+              />
             </fieldset>
             <button
               class="btn btn-lg btn-primary pull-xs-right"
@@ -64,39 +50,39 @@
 </template>
 
 <script setup lang="ts">
-import { reactive, ref } from 'vue'
-import { routerPush } from 'src/router'
-import { api, isFetchError } from 'src/services'
-import type { LoginUser } from 'src/services/api'
-import { useUserStore } from 'src/store/user'
+import { reactive, ref } from "vue";
+import { routerPush } from "src/router";
+import { api, isFetchError } from "src/services";
+import type { LoginUser } from "src/services/api";
+import { useUserStore } from "src/store/user";
 
-const formRef = ref<HTMLFormElement | null>(null)
+const a = ref(1);
+
+const formRef = ref<HTMLFormElement | null>(null);
 const form: LoginUser = reactive({
-  email: '',
-  password: '',
-})
+  email: "",
+  password: "",
+});
 
-const { updateUser } = useUserStore()
+const { updateUser } = useUserStore();
 
-const errors = ref()
+const errors = ref();
 
 async function login() {
-  errors.value = {}
+  errors.value = {};
 
-  if (!formRef.value?.checkValidity())
-    return
+  if (!formRef.value?.checkValidity()) return;
 
   try {
-    const result = await api.users.login({ user: form })
-    updateUser(result.data.user)
-    await routerPush('global-feed')
-  }
-  catch (error) {
+    const result = await api.users.login({ user: form });
+    updateUser(result.data.user);
+    await routerPush("global-feed");
+  } catch (error) {
     if (isFetchError(error)) {
-      errors.value = error.error?.errors
-      return
+      errors.value = error.error?.errors;
+      return;
     }
-    console.error(error)
+    console.error(error);
   }
 }
 </script>

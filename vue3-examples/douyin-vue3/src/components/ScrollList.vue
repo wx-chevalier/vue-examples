@@ -5,7 +5,7 @@
   </Scroll>
 </template>
 
-<script setup>
+<script setup lang="ts">
 import { onMounted, reactive } from 'vue'
 import { _notice } from '@/utils'
 import Scroll from '@/components/Scroll.vue'
@@ -21,7 +21,7 @@ const props = defineProps({
 })
 
 const state = reactive({
-  list: [],
+  list: [] as string[],
   total: 0,
   pageNo: 0,
   pageSize: 10,
